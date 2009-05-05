@@ -1,0 +1,11 @@
+#wcChars {
+  font-size: 22pt;
+  font-family: 'Georgia','Serif';
+  font-weight: bold;
+}
+.wcCharsLess140 {
+  color: #ccc;
+}
+.wcCharsMore140 {
+  color: #D40D12;
+}
