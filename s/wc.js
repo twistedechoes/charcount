@@ -14,14 +14,16 @@ javascript:(function(){
     if (d.getSelection) t = d.getSelection();
     else if(d.selection) t = d.selection.createRange();
     if (t.text != undefined) t = t.text;
-    if (!t || t=='') {
-      var a = d.getElementsByTagName('textarea');
-      for (var i = 0; i < a.length; ++i) {
-        if (a[i].selectionStart != undefined && a[i].selectionStart != a[i].selectionEnd) {
-          t = a[i].value.substring(a[i].selectionStart, a[i].selectionEnd);
-          break;
-        }
-      }
+    if (!t || t == '') {
+      $('input, textarea').each(function (a) {
+        var s;
+        try {
+          s = $(this).getSelection().text;
+          if (s != '') {
+            t = s;
+          }
+        } catch (e) {}
+      });
     }
     return t;
   };
@@ -31,44 +33,40 @@ javascript:(function(){
     var t;
     try{t = f(d);}catch(e){};
     if (!t || t == '') {
-      var fs = d.getElementsByTagName('frame');
-      for (var i = 0; i < fs.length; ++i){
-        t = g(fs[i].contentDocument);
-        if(t && t.toString() != '') break;
-      }
-      if (!t || t.toString() == '') {
-        fs = d.getElementsByTagName('iframe');
-        for (var i = 0; i < fs.length; ++i){
-          t = g(fs[i].contentDocument);
-          if(t && t.toString() != '') break;
-        }
-      }
+      $('frame, iframe', d).each(function (i) {
+        t = g(this.contentDocument);
+      });
     }
     return t;
   };
 
   function u() {
+    if (!$) return; // jQuery isn't ready yet.
     var t= g(document);
     display(t);
   }
 
   // Updates the display with text
   function display(t){
-    t = t.toString();
     var display = document.getElementById('__wc_display');
     if (!display) {
       $('<div id="__wc_display"/>').appendTo('body');
       $("#__wc_display").dialog({
         autoOpen: false,
         bgiframe: false,
-        height: 60,
-        width: 80,
+        height: 80,
+        width: 100,
         modal: false,
         show: 'highlight',
         title: 'wc',
         close: onClose});
     }
-    $('#__wc_display').html(getWcHtml(stats(t)));
+    if (!t) return;
+    var s = stats(t.toString());
+    if (s.chars == 0) {
+      return;
+    }
+    $('#__wc_display').html(getWcHtml(s));
     if (!__wc_closed) {
       __wc_refresh();
     }
