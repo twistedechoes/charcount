@@ -15,14 +15,14 @@ javascript:(function(){
     else if(d.selection) t = d.selection.createRange();
     if (t.text != undefined) t = t.text;
     if (!t || t == '') {
-      $('input, textarea').each(function (a) {
+      $('input[type=text], textarea', d).each(function (i) {
         var s;
         try {
           s = $(this).getSelection().text;
           if (s != '') {
             t = s;
           }
-        } catch (e) {}
+        } catch(e){error(e)}
       });
     }
     return t;
@@ -31,7 +31,7 @@ javascript:(function(){
   // @return the selected text or null
   function g(d){
     var t;
-    try{t = f(d);}catch(e){};
+    try{t = f(d);}catch(e){error(e)};
     if (!t || t == '') {
       $('frame, iframe', d).each(function (i) {
         t = g(this.contentDocument);
@@ -41,8 +41,8 @@ javascript:(function(){
   };
 
   function u() {
-    if (!$) return; // jQuery isn't ready yet.
-    var t= g(document);
+    if (!jQuery) return; // jQuery isn't ready yet.
+    var t = g(document);
     display(t);
   }
 
@@ -58,7 +58,7 @@ javascript:(function(){
         width: 100,
         modal: false,
         show: 'highlight',
-        title: 'wc',
+        title: 'Count',
         close: onClose});
     }
     if (!t) return;
@@ -102,6 +102,7 @@ javascript:(function(){
     var words = t.split(/(\S+)/g).length;
     return {text: t, chars: chars, words: words};
   }
+
   function addCss(fileName) {
     var link = document.createElement("link");
     link.setAttribute("rel", "stylesheet");
@@ -109,11 +110,16 @@ javascript:(function(){
     link.setAttribute("href", fileName);
     document.getElementsByTagName("head")[0].appendChild(link);
   }
+
+  function error(m) {
+    if (window.console && window.console.error) {
+      window.console.error(m);
+    }
+  }
+
   addCss(__wc_base + 's/jquery-ui-1.7.1.custom.css');
   addCss(__wc_base + 's/main.css');
   u();
   setInterval(u, 500);
-
-
 })()
 
