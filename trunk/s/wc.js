@@ -99,7 +99,7 @@ $.fn.stickyCounter = function(stats, options){
     }
 
     $('#sticky').hide().css({
-      position: 'absolute',
+      position: 'fixed',
       top: curTop + 'px',
       left: curLeft + 'px',
       width     : '1px',
