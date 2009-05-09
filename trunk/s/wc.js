@@ -199,8 +199,6 @@ $.fn.stickyCounter = function(stats, options){
 }
 })(jQuery);
 
-
-
 function __wc_refresh() {
   __wc_closed = false;
 }
@@ -235,8 +233,13 @@ javascript:(function($){
     var t;
     try{t = f(d);}catch(e){error(e)};
     if (!t || t == '') {
-      $('frame, iframe', d).each(function (i) {
-        t = g(this.contentDocument);
+      $('frame, iframe', d).each(function(i){
+        // See if there's permission to access this frame. Try the document.location attribute
+        try {
+          var tmp = this.contentDocument.location;
+          // OK, passed
+          t = g(this.contentDocument);
+        } catch(e){}
       });
     }
     return t;
