@@ -11,4 +11,10 @@
 .wcCharsMore140 {
   color: #D40D12;
 }
-
+#wcWords, #wcLines {
+  padding-top: 5px;
+  text-align: left;
+  font-size: 10px;
+  font-family: 'courier';
+  color: #ccc;
+}

@@ -18,7 +18,7 @@ $.fn.stickyCounter = function(stats, options){
                       </tr> \
                       <tr> \
                         <td style="background:url(' + directory + '/ml.' + ext + ') 0 0 repeat-y; width:20px; overflow:hidden;" /> \
-                        <td style="background:#fff; vertical-align:top; padding:10px;"> \
+                        <td style="background:#fff; vertical-align:top;"> \
                           <div id="sticky_content"> \
                           </div> \
                         </td> \
@@ -69,7 +69,7 @@ $.fn.stickyCounter = function(stats, options){
     var y           = window.pageYOffset || (window.document.documentElement.scrollTop || window.document.body.scrollTop);
     var window_size = {'width':width, 'height':height, 'x':x, 'y':y}
 
-    var width              = (sticky_width || ("" + stats.chars).length * 20) + 60;
+    var width              = (sticky_width || Math.max(("" + stats.chars).length * 20),35 + 7 * ('' + stats.words).length) + 60;
     var height             = (sticky_height || 30) + 60;
     var d                  = window_size;
 
@@ -182,6 +182,18 @@ $.fn.stickyCounter = function(stats, options){
     a.push('">');
     a.push(stats.chars);
     a.push('</div>');
+    a.push('<div id="wcWords">');
+    a.push('Words: ');
+    a.push('<b>');
+    a.push(stats.words);
+    a.push('</b>');
+    a.push('</div>');
+    a.push('<div id="wcLines">');
+    a.push('Lines: ');
+    a.push('<b>');
+    a.push(stats.lines);
+    a.push('</b>');
+    a.push('</div>')
     return a.join('');
   }
 }
@@ -261,8 +273,9 @@ javascript:(function($){
    */
   function stats(t) {
     var chars = t.length;
-    var words = t.split(/(\S+)/g).length;
-    return {text: t, chars: chars, words: words};
+    var words = t.split(/\S+/g).length - 1;
+    var lines = t.split(/\n/g).length - 1;
+    return {text: t, chars: chars, words: words, lines: lines};
   }
 
   function addCss(fileName) {
