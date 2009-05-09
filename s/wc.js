@@ -1,19 +1,209 @@
+// The stick-display control
+(function($){
+$.fn.stickyCounter = function(stats, options){
+
+  var options   = options || {};
+  var directory = options && options.directory ? options.directory : 'images';
+  var zooming   = false;
+
+  if ($('#sticky').length == 0) {
+    var ext = $.browser.msie ? 'gif' : 'png';
+    var html = '<div id="sticky" style="display:none;"> \
+                  <table id="sticky_table" style="border-collapse:collapse; width:100%; height:100%;"> \
+                    <tbody> \
+                      <tr> \
+                        <td class="tl" style="background:url(' + directory + '/tl.' + ext + ') 0 0 no-repeat; width:20px; height:20px; overflow:hidden;" /> \
+                        <td class="tm" style="background:url(' + directory + '/tm.' + ext + ') 0 0 repeat-x; height:20px; overflow:hidden;" /> \
+                        <td class="tr" style="background:url(' + directory + '/tr.' + ext + ') 100% 0 no-repeat; width:20px; height:20px; overflow:hidden;" /> \
+                      </tr> \
+                      <tr> \
+                        <td class="ml" style="background:url(' + directory + '/ml.' + ext + ') 0 0 repeat-y; width:20px; overflow:hidden;" /> \
+                        <td class="mm" style="background:#fff; vertical-align:top; padding:10px;"> \
+                          <div id="sticky_content"> \
+                          </div> \
+                        </td> \
+                        <td class="mr" style="background:url(' + directory + '/mr.' + ext + ') 100% 0 repeat-y;  width:20px; overflow:hidden;" /> \
+                      </tr> \
+                      <tr> \
+                        <td class="bl" style="background:url(' + directory + '/bl.' + ext + ') 0 100% no-repeat; width:20px; height:20px; overflow:hidden;" /> \
+                        <td class="bm" style="background:url(' + directory + '/bm.' + ext + ') 0 100% repeat-x; height:20px; overflow:hidden;" /> \
+                        <td class="br" style="background:url(' + directory + '/br.' + ext + ') 100% 100% no-repeat; width:20px; height:20px; overflow:hidden;" /> \
+                      </tr> \
+                    </tbody> \
+                  </table> \
+                  <a href="#" title="Close" id="sticky_close" style="position:absolute; top:0; right:0;"> \
+                    <img src="' + directory + '/closebox.' + ext + '" alt="Close" style="border:none; margin:0; padding:0;" /> \
+                  </a> \
+                </div>';
+
+    $('body').append(html);
+
+    // Hide on Esc
+    $(document).keyup(function(event){
+        if (event.keyCode == 27 && $('#sticky:visible').length > 0) hide();
+    });
+
+    $('#sticky_close').click(hide);
+    $('#sticky').draggable();
+  }
+
+  var sticky          = $('#sticky');
+  var sticky_table    = $('#sticky_table');
+  var sticky_close    = $('#sticky_close');
+  var sticky_content  = $('#sticky_content');
+  var middle_row      = $('td.ml,td.mm,td.mr');
+
+  show(stats);
+
+  return this;
+
+  function show(stats) {
+    if (zooming) return false;
+    zooming = true;
+    var sticky_width  = options.width;
+    var sticky_height = options.height;
+
+    var width       = window.innerWidth || (window.document.documentElement.clientWidth || window.document.body.clientWidth);
+    var height      = window.innerHeight || (window.document.documentElement.clientHeight || window.document.body.clientHeight);
+    var x           = window.pageXOffset || (window.document.documentElement.scrollLeft || window.document.body.scrollLeft);
+    var y           = window.pageYOffset || (window.document.documentElement.scrollTop || window.document.body.scrollTop);
+    var window_size = {'width':width, 'height':height, 'x':x, 'y':y}
+
+    var width              = (sticky_width || ("" + stats.chars).length * 20) + 60;
+    var height             = (sticky_height || 30) + 60;
+    var d                  = window_size;
+
+    // ensure that newTop is at least 0 so it doesn't hide close button
+    var newTop             = 10;
+    var newLeft            = 10;
+    var curTop             = 0;
+    var curLeft            = 0;
+
+    sticky_close.attr('curTop', curTop);
+    sticky_close.attr('curLeft', curLeft);
+    sticky_close.attr('scaleImg', 'false');
+
+    // If already displayed, just update inner html, don't animate
+    if ($('#sticky').is(':visible')) {
+      sticky_content.html(statsHtml(stats));
+      $('#sticky').show().css({
+        opacity : "show",
+        width   : width,
+        height  : height
+      });
+      sticky_content.html(statsHtml(stats));
+      unfixBackgroundsForIE();
+      sticky_close.show();
+      zooming = false;
+      return;
+    }
+
+    $('#sticky').hide().css({
+      position: 'absolute',
+      top: curTop + 'px',
+      left: curLeft + 'px',
+      width     : '1px',
+      height    : '1px'
+    });
+
+    fixBackgroundsForIE();
+    sticky_close.hide();
+
+    sticky_content.html('');
+
+    $('#sticky').animate({
+      top     : newTop + 'px',
+      left    : newLeft + 'px',
+      opacity : "show",
+      width   : width,
+      height  : height
+    }, 500, null, function() {
+      sticky_content.html(statsHtml(stats));
+      unfixBackgroundsForIE();
+      sticky_close.show();
+      zooming = false;
+    })
+    return false;
+  }
+
+  function hide() {
+    if (zooming) return false;
+    zooming         = true;
+    $('#sticky').unbind('click');
+    fixBackgroundsForIE();
+    sticky_content.html('');
+    sticky_close.hide();
+    $('#sticky').animate({
+      top     : sticky_close.attr('curTop') + 'px',
+      left    : sticky_close.attr('curLeft') + 'px',
+      opacity : "hide",
+      width   : '1px',
+      height  : '1px'
+    }, 500, null, function() {
+      unfixBackgroundsForIE();
+      zooming = false;
+      if (options.close) {
+        options.close(this);
+      }
+    });
+    return false;
+  }
+
+  function switchBackgroundImagesTo(to) {
+    $('#sticky_table td').each(function(i) {
+      var bg = $(this).css('background-image').replace(/\.(png|gif|none)\"\)$/, '.' + to + '")');
+      $(this).css('background-image', bg);
+    });
+    var close_img = sticky_close.children('img');
+    var new_img = close_img.attr('src').replace(/\.(png|gif|none)$/, '.' + to);
+    close_img.attr('src', new_img);
+  }
+
+  function fixBackgroundsForIE() {
+    if ($.browser.msie && parseFloat($.browser.version) >= 7) {
+      switchBackgroundImagesTo('gif');
+    }
+  }
+
+  function unfixBackgroundsForIE() {
+    if ($.browser.msie && $.browser.version >= 7) {
+      switchBackgroundImagesTo('png');
+    }
+  }
+
+  function statsHtml(stats) {
+    var a = [];
+    a.push('<div id="wcChars" class="');
+    if (stats.chars < 140) {
+      a.push('wcCharsLess140');
+    } else {
+      a.push('wcCharsMore140');
+    }
+    a.push('">');
+    a.push(stats.chars);
+    a.push('</div>');
+    return a.join('');
+  }
+}
+})(jQuery);
+
+
+
 function __wc_refresh() {
-  $('#__wc_display').dialog('open');
   __wc_closed = false;
 }
 
 // True means used closed the wc dialog.
 var __wc_closed = false;
 
-javascript:(function(){
+javascript:(function($){
   // Function: finds selected text on document d.
   // @return the selected text or null
   function f(d){
     var t;
     if (d.getSelection) t = d.getSelection();
     else if(d.selection) t = d.selection.createRange();
-    if (t.text != undefined) t = t.text;
+    if (t && t.text != undefined) t = t.text;
     if (!t || t == '') {
       $('input[type=text], textarea', d).each(function (i) {
         var s;
@@ -22,7 +212,7 @@ javascript:(function(){
           if (s != '') {
             t = s;
           }
-        } catch(e){error(e)}
+        } catch(e){}
       });
     }
     return t;
@@ -42,49 +232,22 @@ javascript:(function(){
 
   function u() {
     if (!jQuery) return; // jQuery isn't ready yet.
+    if (__wc_closed) return;
     var t = g(document);
     display(t);
   }
 
   // Updates the display with text
   function display(t){
-    var display = document.getElementById('__wc_display');
-    if (!display) {
-      $('<div id="__wc_display"/>').appendTo('body');
-      $("#__wc_display").dialog({
-        autoOpen: false,
-        bgiframe: false,
-        height: 80,
-        width: 100,
-        modal: false,
-        show: 'highlight',
-        title: 'Count',
-        close: onClose});
+    if (!t) {
+      t = '';
     }
-    if (!t) return;
     var s = stats(t.toString());
-    if (s.chars == 0) {
-      return;
-    }
-    $('#__wc_display').html(getWcHtml(s));
-    if (!__wc_closed) {
-      __wc_refresh();
-    }
+    $('#__wc_pseudo_display').stickyCounter(s,
+        {directory: __wc_base + 's/images/',
+         close: onClose});
   }
 
-  function getWcHtml(stats) {
-    var a = [];
-    a.push('<div id="wcChars" class="');
-    if (stats.chars < 140) {
-      a.push('wcCharsLess140');
-    } else {
-      a.push('wcCharsMore140');
-    }
-    a.push('">');
-    a.push(stats.chars);
-    a.push('</div>');
-    return a.join('');
-  }
 
   function onClose() {
     __wc_closed = true;
@@ -117,9 +280,9 @@ javascript:(function(){
     }
   }
 
-  addCss(__wc_base + 's/jquery-ui-1.7.1.custom.css');
   addCss(__wc_base + 's/main.css');
+
   u();
   setInterval(u, 500);
-})()
+})(jQuery);
 
