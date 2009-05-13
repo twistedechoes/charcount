@@ -36,7 +36,7 @@ h1{
         color: #0091d0;
         line-height: 0.85em;
         text-transform: uppercase;
-        background: url('images/page-title-corner-shadow.jpg') -15px 30px no-repeat;
+        background: url('images/page-title-corner-shadow.jpg') 0 70px no-repeat;
         padding: 60px 0px 40px 50px;
         margin-left: -50px;
 }
