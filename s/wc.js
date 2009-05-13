@@ -22,32 +22,32 @@ function __wc_jqueryWrapper() {
     var zooming   = false;
 
     if ($('#sticky').length == 0) {
-      var ext = $.browser.msie ? 'gif' : 'png';
+      var ext = 'png';
       var html = '<div id="sticky" style="display:none;z-index:2147483647"> \
                     <table id="sticky_table" style="border-collapse:collapse; width:100%; height:100%;"> \
                       <tbody> \
                         <tr> \
-                          <td style="background:url(' + directory + '/tl.' + ext + ') 0 0 no-repeat; width:20px; height:20px; overflow:hidden;" /> \
-                          <td style="background:url(' + directory + '/tm.' + ext + ') 0 0 repeat-x; height:20px; overflow:hidden;" /> \
-                          <td style="background:url(' + directory + '/tr.' + ext + ') 100% 0 no-repeat; width:20px; height:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-h.' + ext + ') 0 0 no-repeat; width:20px; height:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-h.' + ext + ') 0 -100px repeat-x; height:20px; overflow:hidden;" /> \
+                          <td style="width:20px; height:20px; overflow:hidden;" /> \
                         </tr> \
                         <tr> \
-                          <td style="background:url(' + directory + '/ml.' + ext + ') 0 0 repeat-y; width:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-v.' + ext + ') 0 0 repeat-y; width:20px; overflow:hidden;" /> \
                           <td style="background:#fff; vertical-align:top;"> \
                             <div id="sticky_content"> \
                             </div> \
                           </td> \
-                          <td style="background:url(' + directory + '/mr.' + ext + ') 100% 0 repeat-y;  width:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-v.' + ext + ') -133px 0 repeat-y;  width:20px; overflow:hidden;" /> \
                         </tr> \
                         <tr> \
-                          <td style="background:url(' + directory + '/bl.' + ext + ') 0 100% no-repeat; width:20px; height:20px; overflow:hidden;" /> \
-                          <td style="background:url(' + directory + '/bm.' + ext + ') 0 100% repeat-x; height:20px; overflow:hidden;" /> \
-                          <td style="background:url(' + directory + '/br.' + ext + ') 100% 100% no-repeat; width:20px; height:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-h.' + ext + ') 0 -250px no-repeat; width:20px; height:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-h.' + ext + ') 0 -422px repeat-x; height:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-h.' + ext + ') -48px -550px no-repeat; width:20px; height:20px; overflow:hidden;" /> \
                         </tr> \
                       </tbody> \
                     </table> \
                     <a href="#" title="Close" id="sticky_close" style="position:absolute; top:0; right:0;"> \
-                      <img src="' + directory + '/closebox.' + ext + '" alt="Close" style="border:none; margin:0; padding:0;" /> \
+                      <div style="background:url(' + directory + '/sprite-h.' + ext + ') 0 -592px no-repeat; width:30px; height:30px; overflow:hidden;">&nbsp;</div> \
                     </a> \
                   </div>';
 
@@ -84,7 +84,7 @@ function __wc_jqueryWrapper() {
       var y           = window.pageYOffset || (window.document.documentElement.scrollTop || window.document.body.scrollTop);
       var window_size = {'width':width, 'height':height, 'x':x, 'y':y}
 
-      var width              = (sticky_width || Math.max(("" + stats.chars).length * 20),40 + 7 * ('' + stats.words).length) + 60;
+      var width              = (sticky_width || Math.max(("" + stats.chars).length * 20),20 + 7 * ('' + stats.words).length) + 60;
       var height             = (sticky_height || 30) + 60;
       var d                  = window_size;
 
@@ -107,7 +107,6 @@ function __wc_jqueryWrapper() {
           height  : height
         });
         sticky_content.html(statsHtml(stats));
-        unfixBackgroundsForIE();
         sticky_close.show();
         zooming = false;
         return;
@@ -121,7 +120,6 @@ function __wc_jqueryWrapper() {
         height    : '1px'
       });
 
-      fixBackgroundsForIE();
       sticky_close.hide();
 
       sticky_content.html('');
@@ -134,7 +132,6 @@ function __wc_jqueryWrapper() {
         height  : height
       }, 500, null, function() {
         sticky_content.html(statsHtml(stats));
-        unfixBackgroundsForIE();
         sticky_close.show();
         zooming = false;
       })
@@ -145,7 +142,6 @@ function __wc_jqueryWrapper() {
       if (zooming) return false;
       zooming         = true;
       $('#sticky').unbind('click');
-      fixBackgroundsForIE();
       sticky_content.html('');
       sticky_close.hide();
       $('#sticky').animate({
@@ -155,35 +151,12 @@ function __wc_jqueryWrapper() {
         width   : '1px',
         height  : '1px'
       }, 500, null, function() {
-        unfixBackgroundsForIE();
         zooming = false;
         if (options.close) {
           options.close(this);
         }
       });
       return false;
-    }
-
-    function switchBackgroundImagesTo(to) {
-      $('#sticky_table td').each(function(i) {
-        var bg = $(this).css('background-image').replace(/\.(png|gif|none)\"\)$/, '.' + to + '")');
-        $(this).css('background-image', bg);
-      });
-      var close_img = sticky_close.children('img');
-      var new_img = close_img.attr('src').replace(/\.(png|gif|none)$/, '.' + to);
-      close_img.attr('src', new_img);
-    }
-
-    function fixBackgroundsForIE() {
-      if ($.browser.msie && parseFloat($.browser.version) >= 7) {
-        switchBackgroundImagesTo('gif');
-      }
-    }
-
-    function unfixBackgroundsForIE() {
-      if ($.browser.msie && $.browser.version >= 7) {
-        switchBackgroundImagesTo('png');
-      }
     }
 
     function statsHtml(stats) {
@@ -198,13 +171,13 @@ function __wc_jqueryWrapper() {
       a.push(stats.chars);
       a.push('</div>');
       a.push('<div id="wcWords">');
-      a.push('Words: ');
+      a.push('W: ');
       a.push('<b>');
       a.push(stats.words);
       a.push('</b>');
       a.push('</div>');
       a.push('<div id="wcLines">');
-      a.push('Lines: ');
+      a.push('L: ');
       a.push('<b>');
       a.push(stats.lines);
       a.push('</b>');
@@ -285,7 +258,10 @@ function __wc_jqueryWrapper() {
     function stats(t) {
       var chars = t.length;
       var words = t.split(/\S+/g).length - 1;
-      var lines = t.split(/\n/g).length - 1;
+      var lines = t.split(/\n/g).length;
+      if (chars == 0) {
+        lines = 0;
+      }
       return {text: t, chars: chars, words: words, lines: lines};
     }
 
