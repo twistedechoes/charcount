@@ -28,8 +28,8 @@ function __wc_jqueryWrapper() {
                       <tbody> \
                         <tr> \
                           <td style="background:url(' + directory + '/sprite-h.' + ext + ') 0 0 no-repeat; width:20px; height:20px; overflow:hidden;" /> \
-                          <td style="background:url(' + directory + '/sprite-h.' + ext + ') 0 -100px repeat-x; height:20px; overflow:hidden;" /> \
-                          <td style="width:20px; height:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-h.' + ext + ') 0 -123px repeat-x; height:20px; overflow:hidden;" /> \
+                          <td style="background:url(' + directory + '/sprite-h.' + ext + ') -45px -675px no-repeat; width:20px; height:20px; overflow:hidden;" /> \
                         </tr> \
                         <tr> \
                           <td style="background:url(' + directory + '/sprite-v.' + ext + ') 0 0 repeat-y; width:20px; overflow:hidden;" /> \
@@ -46,7 +46,7 @@ function __wc_jqueryWrapper() {
                         </tr> \
                       </tbody> \
                     </table> \
-                    <a href="#" title="Close" id="sticky_close" style="position:absolute; top:0; right:0;"> \
+                    <a href="#" title="Close" id="sticky_close" style="position:absolute; top:0; right:0; text-decoration:none"> \
                       <div style="background:url(' + directory + '/sprite-h.' + ext + ') 0 -592px no-repeat; width:30px; height:30px; overflow:hidden;">&nbsp;</div> \
                     </a> \
                   </div>';
