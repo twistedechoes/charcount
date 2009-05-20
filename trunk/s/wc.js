@@ -181,7 +181,17 @@ function __wc_jqueryWrapper() {
       a.push('<b>');
       a.push(stats.lines);
       a.push('</b>');
-      a.push('</div>')
+      a.push('</div>');
+      // Add Tweet This
+      if (stats.chars > 0) {
+        a.push('<div id="tweetThis">');
+        a.push('<a target="_blank" href="http://twitter.com/home?status=');
+        a.push(encodeURIComponent(stats.text));
+        a.push('">');
+        a.push('Tweet&nbsp;this');
+        a.push('</a>');
+        a.push('</div>');
+      }
       return a.join('');
     }
   }
