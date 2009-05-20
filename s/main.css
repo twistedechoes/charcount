@@ -18,3 +18,11 @@
   font-family: 'courier';
   color: #aaa;
 }
+#tweetThis a {
+  color: #330066;
+  font-family: 'Georgia','Serif';
+  font-size: 10px;
+}
+#tweetThis a:hover {
+  background-color: #ccc;
+}
