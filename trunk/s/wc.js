@@ -24,7 +24,7 @@ function __wc_jqueryWrapper() {
     if ($('#sticky').length == 0) {
       var ext = 'png';
       var html = '<div id="sticky" style="display:none;z-index:2147483647;direction:ltr" dir="ltr"> \
-                    <table id="sticky_table" style="border-collapse:collapse; width:100%; height:100%;"> \
+                    <table id="sticky_table" dir="ltr" style="border-collapse:collapse; width:100%; height:100%; direction:ltr"> \
                       <tbody> \
                         <tr> \
                           <td style="background:url(' + directory + '/sprite-h.' + ext + ') 0 0 no-repeat; width:20px; height:20px; overflow:hidden;" /> \
